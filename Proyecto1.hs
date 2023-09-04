@@ -455,3 +455,95 @@ primIguales' (x:xs) = primIgualesA' x (x:xs)
 > primIguales' "jjbcde"
 > "jj"
 -}
+
+--12)
+cuantGen :: (b -> b -> b) -> b -> [a] -> (a -> b) -> b
+cuantGen _ z [] _ = z
+cuantGen op z (x:xs) t = op (t x) (cuantGen op z xs t)
+
+{-
+> cuantGen (**) 1 [2..3] (+2)
+> 1024.0
+
+> cuantGen (||) False [2..6] (== 4)
+> True
+-}
+
+--a)
+paratodo''' :: [a] -> (a -> Bool) -> Bool
+paratodo''' xs t = cuantGen (&&) True xs t
+
+{-
+> paratodo''' [0,0,0,0] esCero
+> True
+
+> paratodo''' [0,0,1,0] esCero
+> False
+-}
+
+--b)
+existe'' :: [a] -> (a -> Bool) -> Bool
+existe'' xs t = cuantGen (||) False xs t
+
+{-
+> existe'' "ghw" esVocal
+> False
+
+> existe'' [0,0,1,0] esCero
+> True
+-}
+
+--c)
+sumatoria'' :: [a] -> (a -> Int) -> Int
+sumatoria'' xs t = cuantGen (+) 0 xs t
+
+{-
+> sumatoria'' [1,2,3] (*2)
+> 12
+
+> sumatoria'' [1..10] (^2)
+> 385
+-}
+
+--d)
+productoria'' :: [a] -> (a -> Int) -> Int
+productoria'' xs t = cuantGen (*) 1 xs t
+
+{-
+> productoria'' [1..5] id
+> 120
+
+> productoria'' [1..5] (*2)
+> 3840
+-}
+
+--13)
+distanciaEdicion :: [Char] -> [Char] -> Int
+distanciaEdicion [] ys = length ys
+distanciaEdicion xs [] = length xs
+distanciaEdicion (x:xs) (y:ys) 
+  | x==y = distanciaEdicion xs ys
+  | otherwise = 1 + distanciaEdicion xs ys
+
+{-
+> distanciaEdicion "123" "456"
+> 3
+
+> distanciaEdicion "" "456"
+> 3
+-}
+
+--14)
+primQueCumplen :: [a] -> (a -> Bool) -> [a]
+primQueCumplen [] _ = []
+primQueCumplen (x:xs) p 
+  | p x = x : primQueCumplen xs p
+  | otherwise = []
+
+{-
+> primQueCumplen "aaeeeiidiiiww" esVocal
+> "aaeeeii"
+
+> primQueCumplen [2,3,5,11,7,8,19,23] esPrimo
+> [2,3,5,11,7]
+-}
